@@ -1,4 +1,4 @@
-package com.vobi.bank.repository;
+package com.vobi.bank.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,10 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
 @Slf4j
-class CustomerRepositoryIT {
+class CustomerServiceIT {
 
 	@Autowired
-	CustomerRepository customerRepository;
+	CustomerService customerService;
 	
 	@Autowired
 	DocumentTypeRepository documentTypeRepository;
@@ -34,13 +34,13 @@ class CustomerRepositoryIT {
 	@Test
 	@Order(1)
 	void debeValidarLasDepedencias() {
-		assertNotNull(customerRepository);
+		assertNotNull(customerService);
 		assertNotNull(documentTypeRepository);
 	}
 	
 	@Test
 	@Order(2)
-	void debeCrearUnCustomer() {
+	void debeCrearUnCustomer() throws Exception {
 	 //Arrange
 	 Integer idDocumentType=1;
 	 Integer idCustomer=14836554;
@@ -57,7 +57,7 @@ class CustomerRepositoryIT {
 	 customer.setToken("sdfsfdgsjkfhsjkdhfsjk");
 
 	 //Act
-	 customer=customerRepository.save(customer);
+	 customer=customerService.save(customer);
 	 //Assert
 	 
 	 assertNotNull(customer,"El customer es nulo no se pudo grabar");
@@ -66,17 +66,17 @@ class CustomerRepositoryIT {
 	
 	@Test
 	@Order(3)
-	void debeModificarUnCustomer() {
+	void debeModificarUnCustomer() throws Exception {
 	 //Arrange
 	 Integer idCustomer=14836554;
 	 Customer customer=null;
 	 
 	 
-	 customer=customerRepository.findById(idCustomer).get();
+	 customer=customerService.findById(idCustomer).get();
 	 customer.setEnable("N");
 	 //Act
-	 customer=customerRepository.save(customer);
-	 //Assert
+	 customer=customerService.update(customer);
+	 //Assert		
 	 
 	 assertNotNull(customer,"El customer es nulo no se pudo grabar");
 
@@ -85,18 +85,18 @@ class CustomerRepositoryIT {
 	
 	@Test
 	@Order(4)
-	void debeBorrarUnCustomer() {
+	void debeBorrarUnCustomer() throws Exception {
 	 //Arrange
 	 Integer idCustomer=14836554;
 	 Customer customer=null;
 	 Optional<Customer> customerOptional = null;
 	 
-	 
-	 customer=customerRepository.findById(idCustomer).get();
+	 assertTrue(customerService.findById(idCustomer).isPresent(),"No encontro el customer");
+	 customer=customerService.findById(idCustomer).get();
 	 //Act
-	 customerRepository.delete(customer);
+	 customerService.delete(customer);
 	 
-	 customerOptional=customerRepository.findById(idCustomer);
+	 customerOptional=customerService.findById(idCustomer);
 	 //Assert
 	 
 	 assertFalse(customerOptional.isPresent(),"No puedo borrar el customer");
@@ -111,7 +111,7 @@ class CustomerRepositoryIT {
 	 List<Customer> customers = null;
 	 //Act
 	 
-	 customers=customerRepository.findAll();
+	 customers=customerService.findAll();
 	 for (Customer customer : customers) {
 		 log.info(customer.getName());
 	 }
